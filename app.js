@@ -1,15 +1,16 @@
-// HTTP 모듈을 불러옵니다
-const http = require('http');
+// Express 모듈을 불러옵니다
+const express = require('express');
 
-// 서버를 생성하고 요청을 처리합니다
-const server = http.createServer((req, res) => {
-  // 응답 헤더 설정
-  res.writeHead(200, { 'Content-Type': 'text/plain' });
-  // 응답 내용 작성
-  res.end('Hello, World!\n');
+// Express 애플리케이션 생성
+const app = express();
+
+// 기본 라우트 설정
+app.get('/', (req, res) => {
+  res.send('Hello, Nodejs~~');
 });
 
 // 서버가 3000번 포트에서 실행되도록 설정
-server.listen(3000, () => { 
-  console.log('서버가 http://localhost:3000 에서 실행 중입니다.');
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`서버가 http://localhost:${PORT} 에서 실행 중입니다.`);
 });
