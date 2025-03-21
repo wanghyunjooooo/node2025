@@ -14,6 +14,10 @@ app.post('/swag', (req, res) => {
   res.send(req.body);
 });
 
+app.post('/swag/:person', (req, res) => {
+  res.send(req.params.person);
+});
+
 // 서버가 3000번 포트에서 실행되도록 설정
 const PORT = 2007;
 app.listen(PORT, () => {  
