@@ -5,12 +5,16 @@ const express = require('express');
 const app = express();
 
 // 기본 라우트 설정
-app.get('/', (req, res) => {
-  res.send('Hello, Nodejs~~');
+app.get('/swag', (req, res) => {
+  res.send('get swag');
+});
+
+app.post('/swag', (req, res) => {
+  res.send('post swag');
 });
 
 // 서버가 3000번 포트에서 실행되도록 설정
-const PORT = 3000;
-app.listen(PORT, () => {
+const PORT = 2007;
+app.listen(PORT, () => {  
   console.log(`서버가 http://localhost:${PORT} 에서 실행 중입니다.`);
 });
