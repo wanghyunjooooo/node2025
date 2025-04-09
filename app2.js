@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const mysql = require('mysql2');
+const methodOverride = require('method-override')
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -22,9 +23,10 @@ db.connect(err => {
   }
   console.log('MySQL 연결 성공!!');
 })
-
+app.use(methodOverride('_method'))
 app.use(express.json());
 app.use(express.urlencoded({extended : true}));
+
 app.set('view engine', 'ejs');
 
 // __dirname : 현재 파일이 속해있는 디렉토리의 절대 경로
@@ -98,6 +100,23 @@ app.put('/travel/:id', (req, res) => {
     });
   });
 
+
+
+  app.get('/travel/:id/edit', (req, res) => {
+    const travelId = req.params.id;
+    const _query = 'SELECT * FROM travellist WHERE id = ?';
+    db.query(_query, [travelId], (err, results) => {
+      if(err) {
+        console.error('데이터베이스 쿼리 실패 : ', err);
+        res.status(500).send('Internal Server Error');
+        return;
+      }
+      const travel = results[0];
+      res.render('editTravel', { travel });
+    });
+  });
+
+  
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);
 });
