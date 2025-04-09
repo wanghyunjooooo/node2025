@@ -5,52 +5,79 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const app = express();
-const port = 2007;
+const port = 5432;
 
 const db = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT
 });
 
 db.connect(err => {
-    if (err) {
-        console.error('MySQL 연결 실패:', err);
-        return;
-    }
-    console.log('MySQL 연결 성공!');
-});
+  if(err) {
+    console.error('MySQL 연결 실패 : ', err);
+    return;
+  }
+  console.log('MySQL 연결 성공!!');
+})
 
+app.use(express.json());
+app.use(express.urlencoded({extended : true}));
 app.set('view engine', 'ejs');
+
+// __dirname : 현재 파일이 속해있는 디렉토리의 절대 경로
+//path.join : 운영체제에 맞추어 경로지정자(/ 혹은 \)를 설정해 준다.
 app.set('views', path.join(__dirname, 'views'));
 
-// 여행 목록 조회
-app.get('/travel', async (req, res) => {
-    try {
-        const [results] = await db.promise().query('SELECT * FROM travellist');
-        res.render('travel', { travelList: results });
-    } catch (err) {
-        console.error('데이터베이스 쿼리 실패', err);
-        res.status(500).send('Internal Server Error');
+// 두 개의 결괏값이 같다.
+console.log(path.join(__dirname, 'views'));
+// console.log(__dirname + '\\views');
+
+app.get('/travel', (req, res) => {
+  const _query = 'SELECT * FROM travellist';
+  db.query(_query, (err, results) => {
+    if(err) {
+      console.error('데이터베이스 쿼리 실패 : ', err);
+      res.status(500).send('Internal Server Error');
+      return;
     }
+    const travelList = results;
+    res.render('travel', { travelList });
+  });
 });
 
-// 특정 여행 상세 정보 조회
-app.get('/travel/:id', async (req, res) => {
-    const travelId = req.params.id;
-    try {
-        const [results] = await db.promise().query('SELECT * FROM travellist WHERE id = ?', [travelId]);
-        if (results.length === 0) {
-            return res.status(404).send('여행 정보를 찾을 수 없습니다.');
-        }
-        res.render('travelDetail', { travel: results[0] });
-    } catch (err) {
-        console.error('데이터베이스 쿼리 실패', err);
-        res.status(500).send('Internal Server Error');
+
+app.get('/travel/:id', (req, res) => {
+  const travelId = req.params.id;
+  const _query = 'SELECT * FROM travellist WHERE id = ?';
+  db.query(_query, [travelId], (err, results) => {
+    if(err) {
+      console.error('데이터베이스 쿼리 실패 : ', err);
+      res.status(500).send('Internal Server Error');
+      return;
     }
+    const travel = results[0];
+    res.render('travelDetail', { travel });
+  });
 });
+
+
+app.post('/travel', (req, res) => {
+  const {name} = req.body;
+  const _query = 'INSERT INTO travellist (name) VALUES (?)';
+  db.query(_query, [name], (err, results) => {
+    if(err) {
+      console.error('데이터베이스 쿼리 실패 : ', err);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    res.redirect('/travel');
+  });
+})
 
 app.listen(port, () => {
-    console.log(`서버가 http://localhost:${port} 에서 실행 중`);
+  console.log(`Server running at http://localhost:${port}/`);
 });
+
