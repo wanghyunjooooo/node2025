@@ -8,9 +8,11 @@
 <body>
     <h1>여행지 목록</h1>
     <ul>
-        <% travelList.forEach(travel => { %>
+        <% travelList.forEach(travel => { %>    
             <li><a href="/travel/<%= travel.id %>"><%= travel.name %></a></li>
         <% }); %>
     </ul>
+
+    <a href="/add-travel">여행지 추가</a>
 </body>
 </html>
