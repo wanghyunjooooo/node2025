@@ -8,7 +8,7 @@ router.get('/add', (req, res) => [
 ]);
 
 
-router.get('', (req, res) => {
+router.get('/', (req, res) => {
   const _query = 'SELECT * FROM travellist';
   db.query(_query, (err, results) => {
     if(err){
@@ -36,7 +36,7 @@ router.get('/:id', (req, res) => {
   });
 });
 
-router.post('', (req, res) => {
+router.post('/', (req, res) => {
   const {name} = req.body;
   const _query = 'INSERT INTO travellist (name) VALUES (?)';
   db.query(_query, [name],(err, results) => {
@@ -45,7 +45,7 @@ router.post('', (req, res) => {
       res.status(500).send('Internal Server Error');
       return;
     }
-    res.redirect('');
+    res.redirect('/travel');
   });
 })
 
